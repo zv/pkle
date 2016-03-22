@@ -37,28 +37,30 @@ public:
   typedef std::pair<std::string, uint64_t> solution;
 
   std::vector<solution> solutions() {
-    std::vector<solution> ret;
+    std::vector<solution> sol;
     z3::model model = solver_.get_model();
     for (int i = 0; i < model.num_consts(); ++i) {
       z3::func_decl decl = model.get_const_decl(i);
-      word64 constant = model.get_const_interp(decl);
-      boost::optional<uint64_t> v = constant.value();
-      if (v) {
+      z3::expr constant = model.get_const_interp(decl);
+      __uint64 u = 0;
+      Z3_bool ret = Z3_get_numeral_uint64(z3_context(), constant, &u);
+      if (ret == Z3_TRUE) {
         std::string name = decl.name().str();
-        ret.push_back(std::make_pair(name, *v));
+        sol.push_back(std::make_pair(name, u));
       }
     }
-    return ret;
+    return sol;
   }
 
   void print() {
     z3::model model = solver_.get_model();
     for (int i = 0; i < model.num_consts(); ++i) {
       z3::func_decl decl = model.get_const_decl(i);
-      word64 constant = model.get_const_interp(decl);
-      boost::optional<uint64_t> v = constant.value();
-      if (v) {
-        std::cout << decl.name() << " = " << std::hex << *v << std::endl;
+      z3::expr constant = model.get_const_interp(decl);
+      __uint64 u = 0;
+      Z3_bool ret = Z3_get_numeral_uint64(z3_context(), constant, &u);
+      if (ret == Z3_TRUE) {
+        std::cout << decl.name() << " = " << std::hex << u << std::endl;
       }
     }
   }

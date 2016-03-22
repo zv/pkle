@@ -1,15 +1,36 @@
 #include <z3++.h>
 #include "solver.h"
 
+word32 crc32(word32 state, word8 byte) {
+  /* http://www.hackersdelight.org/hdcodetxt/crc.c.txt */
+  word32 crc = state ^ word32(byte);
+  for (int j = 7; j >= 0; j--) {
+    word32 mask = -(crc & word32(1));
+    crc = (crc >> 1) ^ (mask & word32(0xEDB88320));
+  }
+  return crc;
+}
+
 int main() {
-  word8 x("x");
-  word8 y(127);
 
   solver s;
 
-  word8 r = x >> 1 == y;
+  word32 state("state");
+  word32 out = crc32(state, word8(0xa5)) == word32(0xdeadbeef);
 
-  s.add(r);
+  s.add(out);
+
+  while (s.solve()) {
+    s.print();
+    s.next();
+  }
+
+  s = solver();
+
+  word32 x("x");
+  word32 ret = crc32(word32(0x16202a48), word8(0xa5)) == x;
+
+  s.add(ret);
 
   while (s.solve()) {
     s.print();

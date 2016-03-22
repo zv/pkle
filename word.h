@@ -9,6 +9,13 @@
 template <size_t N> class word {
 public:
 
+  word(z3::expr expr) : expr_(expr) {
+  }
+
+  word(const word& src) : expr_(z3_context()) {
+    *this = src;
+  }
+
   explicit word(const std::string& name) : expr_(z3_context()) {
     expr_ = z3_context().bv_const(name.c_str(), N);
   }
@@ -17,11 +24,13 @@ public:
     expr_ = z3_context().bv_val((__uint64)value, N);
   }
 
-  word(const word& src) : expr_(z3_context()) {
-    *this = src;
-  }
-
-  word(z3::expr expr) :expr_(expr) {
+  template <size_t M> explicit word(const word<M>& src) : expr_(z3_context()) {
+    if (N < M) {
+      expr_ = src.expr().extract(N-1, 0);
+    } else {
+      Z3_ast ext = Z3_mk_zero_ext(z3_context(), unsigned(N-M), src.expr());
+      expr_ = z3::to_expr(z3_context(), ext);
+    }
   }
 
   word& operator =(const word& rhs) {
@@ -32,6 +41,10 @@ public:
   word& operator =(const z3::expr& rhs) {
     expr_ = rhs;
     return *this;
+  }
+
+  word operator -() {
+    return -expr_;
   }
 
   word operator ==(const word& rhs) {
@@ -118,16 +131,6 @@ public:
 
   z3::expr expr() const {
     return expr_;
-  }
-
-  boost::optional<uint64_t> value() {
-    __uint64 u = 0;
-    Z3_bool ret = Z3_get_numeral_uint64(z3_context(), expr_, &u);
-    if (ret == Z3_TRUE) {
-      return boost::optional<uint64_t>(u);
-    } else {
-      return boost::optional<uint64_t>();
-    }
   }
 
 private:
