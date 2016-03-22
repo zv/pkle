@@ -1,4 +1,5 @@
 #include <z3++.h>
+#include "loader.h"
 #include "solver.h"
 
 word32 crc32(word32 state, word8 byte) {
@@ -11,31 +12,38 @@ word32 crc32(word32 state, word8 byte) {
   return crc;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
-  solver s;
-
-  word32 state("state");
-  word32 out = crc32(state, word8(0xa5)) == word32(0xdeadbeef);
-
-  s.add(out);
-
-  while (s.solve()) {
-    s.print();
-    s.next();
+  if (argc != 2) {
+    std::cout << "Usage: " << argv[0] << " <zip_file>" << std::endl;
+    return 0;
   }
 
-  s = solver();
+  std::vector<encrypted_file> files = load_file(argv[1]);
 
-  word32 x("x");
-  word32 ret = crc32(word32(0x16202a48), word8(0xa5)) == x;
+  //solver s;
 
-  s.add(ret);
+  //word32 state("state");
+  //word32 out = crc32(state, word8(0xa5)) == word32(0xdeadbeef);
 
-  while (s.solve()) {
-    s.print();
-    s.next();
-  }
+  //s.add(out);
+
+  //while (s.solve()) {
+    //s.print();
+    //s.next();
+  //}
+
+  //s = solver();
+
+  //word32 x("x");
+  //word32 ret = crc32(word32(0x16202a48), word8(0xa5)) == x;
+
+  //s.add(ret);
+
+  //while (s.solve()) {
+    //s.print();
+    //s.next();
+  //}
 
   return 0;
 }

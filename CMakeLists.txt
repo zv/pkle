@@ -19,6 +19,7 @@ add_library(pklez3 ${LibSources})
 
 set(BinSources
   main.cpp
+  loader.cpp
 )
 
 set(BinLibaries
