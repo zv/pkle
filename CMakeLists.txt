@@ -4,6 +4,11 @@ cmake_minimum_required(VERSION 3.0)
 include_directories(/opt/boost)
 link_directories(/opt/boost/stage/lib)
 
+# where is z3?
+include_directories(./z3/src/api)
+include_directories(./z3/src/api/c++)
+link_directories(./z3/build)
+
 include_directories(.)
 
 #set(LibSources
@@ -16,10 +21,15 @@ include_directories(.)
 
 set(BinSources
   main.cpp
+  context.cpp
+)
+
+set(BinLibaries
+  z3
 )
 
 add_executable(pkle ${BinSources})
-target_link_libraries(pkle)
+target_link_libraries(pkle ${BinLibaries})
 
 #set(TestSources
 #  tests.cpp
