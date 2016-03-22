@@ -60,7 +60,7 @@ public:
       __uint64 u = 0;
       Z3_bool ret = Z3_get_numeral_uint64(z3_context(), constant, &u);
       if (ret == Z3_TRUE) {
-        std::cout << decl.name() << " = " << std::hex << u << std::endl;
+        std::cout << decl.name() << " = " << char(u) << std::endl;
       }
     }
   }

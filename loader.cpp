@@ -39,9 +39,9 @@ std::string hash(const uint32_t crc32, const uint32_t compressedSize, const uint
 
 std::vector<uint8_t> readFileBytes(FILE* file, const size_t length) {
   /* only need the first few bytes of the file */
-  std::vector<uint8_t> buffer(32);
+  std::vector<uint8_t> buffer(24);
   size_t bytesRead = fread(&buffer[0], 1, buffer.size(), file);
-  if (bytesRead < 24) {
+  if (bytesRead != 24) {
     return std::vector<uint8_t>();
   }
 

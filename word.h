@@ -9,6 +9,9 @@
 template <size_t N> class word {
 public:
 
+  word() : expr_(z3_context()) {
+  }
+
   word(z3::expr expr) : expr_(expr) {
   }
 
